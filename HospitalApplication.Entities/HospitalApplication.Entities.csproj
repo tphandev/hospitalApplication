@@ -70,6 +70,7 @@
     <Compile Include="Models\dmcls.cs" />
     <Compile Include="Models\dmdonvi.cs" />
     <Compile Include="Models\HADbContext.cs" />
+    <Compile Include="Models\khambenh.cs" />
     <Compile Include="Models\thuchi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

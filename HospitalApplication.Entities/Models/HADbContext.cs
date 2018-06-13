@@ -21,6 +21,7 @@ namespace HospitalApplication.Entities.Models
         public DbSet<thuchi> thuchi { get; set; }
         public DbSet<dmcls> dmcls { get; set; }
         public DbSet<chidinhcls> chidinhcls { get; set; }
+        public DbSet<khambenh> khambenh { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<bnnoitru>()
@@ -28,7 +29,14 @@ namespace HospitalApplication.Entities.Models
                 .HasRequired(t => t.dmdonvi).WithMany(c => c.bnnoitru).HasForeignKey(t => t.madv).WillCascadeOnDelete(false);
                 modelBuilder.Entity<bnnoitru>().HasRequired(t => t.dmbenhnhan).WithMany(c => c.bnnoitru).HasForeignKey(t => t.mabn).WillCascadeOnDelete(false);
 
+
+            modelBuilder.Entity<khambenh>()
+                .ToTable("khambenh", "current").HasKey(m => new {m.mabn, m.makb })
+                .HasRequired(t => t.dmdonvi).WithMany(c => c.khamhbenh).HasForeignKey(t => t.madv).WillCascadeOnDelete(false);
+            modelBuilder.Entity<khambenh>().HasRequired(t => t.dmbenhnhan).WithMany(c => c.khambenh).HasForeignKey(t => t.mabn).WillCascadeOnDelete(false);
+
             modelBuilder.Entity<dmbenhnhan>().ToTable("dmbenhnhan", "current").HasKey(m => m.mabn);
+           
             modelBuilder.Entity<dmdonvi>().ToTable("dmdonvi", "current").HasKey(m => m.madv);
             modelBuilder.Entity<dmcls>().ToTable("dmcls", "current").HasKey(m => m.macls);
             modelBuilder.Entity<thuchi>().ToTable("thuchi", "current").HasKey(m => m.soct)

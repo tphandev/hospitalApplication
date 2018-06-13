@@ -1,4 +1,5 @@
 ﻿using HospitalApplication.Entities.Models;
+using HospitalApplication.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,17 +16,22 @@ namespace HospitalApplication.Web.Controllers
         // GET: BaoCaoGiaoBan
         public ActionResult Index()
         {
-            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
-            DateTime date1 = DateTime.Now;
-            Calendar cal = dfi.Calendar;
-            int week = cal.GetWeekOfYear(date1, dfi.CalendarWeekRule,
-                                                            dfi.FirstDayOfWeek);
-            Console.WriteLine("{0:d}: Week {1} ({2})", date1,
-                              cal.GetWeekOfYear(date1, dfi.CalendarWeekRule,
-                                                dfi.FirstDayOfWeek),
-                              cal.ToString().Substring(cal.ToString().LastIndexOf(".") + 1));
+            DateTime tuNgay = new DateTime(2018, 5, 7);
+            DateTime denNgay = new DateTime(2018, 5, 13);
+            getTinhHinhKhamBenh(tuNgay, denNgay);
             return View();
         }
-        private 
+        private List<TinhHinhKhamBenhModel> getTinhHinhKhamBenh(DateTime tuNgay, DateTime denNgay)
+        {
+           
+           
+            var tmp = storeDB.khambenh.Where(t => tuNgay <= t.ngaykcb && denNgay >= t.ngaykcb).ToList()
+                .Select(y=>new TinhHinhKhamBenhModel {
+                madv=y.madv,ngaykcb=new DateTime(y.ngaykcb.Year,y.ngaykcb.Month,y.ngaykcb.Day)});
+           var query= tmp.GroupBy(y => new { y.madv, y.ngaykcb }).ToList().Select(t => new TinhHinhKhamBenhModel { madv = t.Key.madv, soluong = t.Key.madv.Count(), ngaykcb = t.Key.ngaykcb });
+            List<TinhHinhKhamBenhModel> models = query.ToList();
+
+            return models;
+        }
     }
 }

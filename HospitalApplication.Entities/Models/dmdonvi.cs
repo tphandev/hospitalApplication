@@ -16,5 +16,6 @@ namespace HospitalApplication.Entities.Models
         public string dieutri { get; set; }
         public byte khoaduoc { get; set; }
         public virtual ICollection<bnnoitru> bnnoitru { get; set; }
+        public virtual ICollection<khambenh> khamhbenh { get; set; }
     }
 }
