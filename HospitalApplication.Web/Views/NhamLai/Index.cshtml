@@ -1,0 +1,187 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<div id="demo">
+    <h2 class="text-center text-success">KIỂM TRA THU NHẦM LAI ĐỀ ÁN DỊCH VỤ</h2>
+    <br />
+    <form class="form-horizontal">
+       <div class="form-group">
+            <label class="control-label col-md-2">Tháng, Năm kết toán:</label>
+            <div class="col-sm-1">
+                @Html.DropDownList("thanglist", ViewBag.thanglist as SelectList, new { @class = "form-control" })
+            </div>
+           <div class="col-sm-2">
+               @Html.DropDownList("namlist", ViewBag.namlist as SelectList, new { @class = "form-control" })
+           </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 text-center">
+                <a id="btnSubmit" class="btn btn-success btn-md">Kiểm tra</a>
+            </div>
+        </div>
+    </form>
+    <br />
+    <br />
+
+    <div>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Dịch vụ thu sang Viện phí</a></li>
+            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Viện phí thu sang Dịch vụ</a></li>
+
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="home">
+                <table id="myDataTable" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã bệnh nhân</th>
+                            <th>Mã hồ sơ</th>
+                            <th width="15%">Họ tên</th>
+                            <th>Nội trú</th>
+                            <th width="15%">Tên CLS</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                            <th>Ngày thu</th>
+                            <th>Tài khoản Thu</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="profile">
+                <div role="tabpanel" class="tab-pane active" id="home">
+                    <table id="myDataTable2" class="table table-striped table-bordered" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã bệnh nhân</th>
+                                <th>Mã hồ sơ</th>
+                                <th width="15%">Họ tên</th>
+                                <th>Nội trú</th>
+                                <th width="15%">Tên CLS</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                                <th>Ngày thu</th>
+                                <th>Tài khoản Thu</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+
+    
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {         
+            var thangnow = moment().format('MM');
+            $('#thanglist').val(thangnow);
+            $('#myDataTable tr th').addClass("text-center");
+            $('#myDataTable2 tr th').addClass("text-center");
+            $('#myDataTable').dataTable({
+                "bServerSide": true,
+                "sAjaxSource": "NhamLai/AjaxHandler",
+                "bProcessing": true,
+                "bFilter": false,
+                "bInfo": false,
+                "bPaginate": false,
+                "bSortable":false,
+                "iDisplayLength": 100,
+                "aoColumns": [
+                                { "sName": "stt", "bSortable": false },
+                                { "sName": "mabn", "bSortable": false },
+                                { "sName": "makb", "bSortable": false },
+                                { "sName": "hoten", "bSortable": false },
+                                { "sName": "noitru", "sClass": "text-center", "bSortable": false },
+                                { "sName": "tencls", "bSortable": false },
+                                { "sName": "soluong", "sClass": "text-center", "bSortable": false },
+                                { "sName": "thanhtien", "sClass": "text-right", "bSortable": false },
+                                { "sName": "ngayct", "bSortable": false },
+                                { "sName": "taikhoan", "bSortable": false }
+                ],
+                "fnServerParams": function (aoData) {
+                    var thangkt = $('#thanglist').val();
+                    var namkt = $('#namlist').val();
+                    aoData.push({ name: "thangkt", value: thangkt }, { name: "namkt", value: namkt });
+                },
+                "language": {
+                    "lengthMenu": "Hiện _MENU_ dòng trên trang",
+                    "zeroRecords": "Không có dữ liệu",
+                    "info": "Đang hiện trang _PAGE_ trong _PAGES_",
+                    "infoEmpty": "Không có dữ liệu",
+                    "infoFiltered": "(đã lộc trong _MAX_ dòng)",
+                    "processing": "<strong class='text-success'>Đang xử lý! chờ chút xíu....</strong> ",
+                    "search": "Tìm:",
+                    "paginate": {
+                        "first": "Đầu",
+                        "last": "Cuối",
+                        "next": "Tiếp",
+                        "previous": "Trước"
+                    },
+                }
+
+            });
+
+            $('#myDataTable2').dataTable({
+                "bServerSide": true,
+                "sAjaxSource": "NhamLai/AjaxHandler2",
+                "bProcessing": true,
+                "bFilter": false,
+                "bInfo": false,
+                "bPaginate": false,
+                "bSortable": false,
+                "iDisplayLength": 100,
+                "aoColumns": [
+                                { "sName": "stt", "bSortable": false },
+                                { "sName": "mabn", "bSortable": false },
+                                { "sName": "makb", "bSortable": false },
+                                { "sName": "hoten", "bSortable": false },
+                                { "sName": "noitru", "sClass": "text-center", "bSortable": false },
+                                { "sName": "tencls", "bSortable": false },
+                                { "sName": "soluong", "sClass": "text-center", "bSortable": false },
+                                { "sName": "thanhtien", "sClass": "text-right", "bSortable": false },
+                                { "sName": "ngayct", "bSortable": false },
+                                { "sName": "taikhoan", "bSortable": false }
+                ],
+                "fnServerParams": function (aoData) {
+                    var thangkt = $('#thanglist').val();
+                    var namkt = $('#namlist').val();
+                    aoData.push({ name: "thangkt", value: thangkt }, { name: "namkt", value: namkt });
+                },
+                "language": {
+                    "lengthMenu": "Hiện _MENU_ dòng trên trang",
+                    "zeroRecords": "Không có dữ liệu",
+                    "info": "Đang hiện trang _PAGE_ trong _PAGES_",
+                    "infoEmpty": "Không có dữ liệu",
+                    "infoFiltered": "(đã lộc trong _MAX_ dòng)",
+                    "processing": "<strong class='text-success'>Đang xử lý! chờ chút xíu....</strong> ",
+                    "search": "Tìm:",
+                    "paginate": {
+                        "first": "Đầu",
+                        "last": "Cuối",
+                        "next": "Tiếp",
+                        "previous": "Trước"
+                    },
+                }
+
+            });
+
+            $('#btnSubmit').click(function () {
+                $('#myDataTable').dataTable().fnDraw();
+                $('#myDataTable2').dataTable().fnDraw();
+            });      
+        });
+    </script>
+}

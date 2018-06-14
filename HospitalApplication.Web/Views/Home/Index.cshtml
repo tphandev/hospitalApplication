@@ -1,0 +1,131 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div id="demo">
+    <h2 class="text-center text-success">KIỂM TRA THÔNG TIN THẺ BHYT</h2>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-2 text-right"><input type="radio" name="isXuatVien" value="1" checked /> Xuất viện</div>
+            <div class="col-md-2"><input type="radio" name="isXuatVien" value="0" /> Đang Điều Trị </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Ngày ra viện:</label>
+            <div class="col-sm-10">
+                <input type="text" name="daterange" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Khoa:</label>
+            <div class="col-sm-10">
+                @Html.DropDownList("khoalist", ViewBag.khoalist as SelectList, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 text-center">
+                <a id="btnSubmit" class="btn btn-success btn-md">Kiểm tra</a>
+            </div>
+        </div>
+    </form>
+    <br />
+    <br />
+
+    <table id="myDataTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th width="2%">STT</th>
+                <th width="12%">Mã bệnh án</th>
+                <th width="15%">Họ lót</th>
+                <th width="5%">Tên</th>
+                <th width="13%">Ngày vào</th>
+                <th width="13%">Ngày ra</th>
+                <th width="15%">Khoa</th>
+                <th width="25%">Kết quả</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var startdate = moment().format('DD/MM/YYYY');
+            var enddate = moment().format('DD/MM/YYYY');
+            var isXuatVien = 1;
+            $('input[name="daterange"]').daterangepicker({
+                "startDate": moment(),
+                "endDate": moment(),
+                locale: {
+
+                    format: 'DD/MM/YYYY'
+
+                },
+
+            }, function (start, end, label) {
+                startdate = start.format('DD/MM/YYYY');
+                enddate = end.format('DD/MM/YYYY');
+            });
+
+            $('#myDataTable').dataTable({
+                "bServerSide": true,
+                "sAjaxSource": "Home/AjaxHandler",
+                "bProcessing": true,
+                "iDisplayLength": 100,
+                "aoColumns": [
+                                { "sName": "stt" },
+                                { "sName": "maba" },
+                                { "sName": "holot" },
+                                { "sName": "ten" },
+                                { "sName": "ngayvv" },
+                                { "sName": "ngayrv" },
+                                { "sName": "tendv" },
+                                { "sName": "ketQua" }
+                ],
+                "fnServerParams": function (aoData) {
+                    var madv = $('#khoalist').val();
+                    aoData.push({ name: "madv", value: madv }, { name: "startdate", value: startdate }, { name: "enddate", value: enddate },
+                        { name: "isXuatVien", value: isXuatVien });
+                },
+                "language": {
+                    "lengthMenu": "Hiện _MENU_ dòng trên trang",
+                    "zeroRecords": "Không có dữ liệu",
+                    "info": "Đang hiện trang _PAGE_ trong _PAGES_",
+                    "infoEmpty": "Không có dữ liệu",
+                    "infoFiltered": "(đã lộc trong _MAX_ dòng)",
+                    "processing": "<strong class='text-success'>Đang xử lý! chờ chút xíu....</strong> ",
+                    "search": "Tìm:",
+                    "paginate": {
+                        "first": "Đầu",
+                        "last": "Cuối",
+                        "next": "Tiếp",
+                        "previous": "Trước"
+                    },
+                }
+
+            });
+
+            $('#btnSubmit').click(function () {
+                $('#myDataTable').dataTable().fnDraw();
+            });
+
+            $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+                startdate = picker.startDate.format('DD/MM/YYYY');
+                enddate = picker.endDate.format('DD/MM/YYYY');
+
+            });
+
+            $('input[name="isXuatVien"]').change(function () {
+                var radioValue = $('input[name="isXuatVien"]:checked').val();
+                isXuatVien = radioValue;
+                if (radioValue == 1) {
+                    $('input[name="daterange"]').prop('disabled', false);
+                }
+                else {
+                    $('input[name="daterange"]').prop('disabled', true);
+                }
+            });
+        });
+    </script>
+}
