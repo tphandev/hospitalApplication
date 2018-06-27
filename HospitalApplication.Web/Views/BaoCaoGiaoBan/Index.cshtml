@@ -11,14 +11,18 @@
             <div class="col-sm-3">
                 <input type="text" name="daterange" class="form-control" />                
             </div>
-            <div class="col-sm-7">
-                <a id="btnSubmit" class="btn btn-success btn-md">Lấy báo cáo</a>
+            <div class="col-sm-7">             
+                <a id="btnBar" class="btn btn-success btn-md">Vẽ biểu đồ cột</a>
+                <a id="btnLine" class="btn btn-success btn-md">Vẽ biểu đồ đường</a>
             </div>
         </div>             
     </form>
 </div>
+<br />
+<br />
 <div class="chart">
     <canvas id="barChart" style="height:230px"></canvas>
+   
 </div>
 @section scripts{
 <script src="~/Scripts/Chart.min.js"></script>
@@ -27,6 +31,9 @@
             var startdate = moment().format('DD/MM/YYYY');
             var enddate = moment().format('DD/MM/YYYY');
             var isXuatVien = 1;
+            var areaChartData;
+            var ctx = document.getElementById('barChart').getContext('2d');
+            var chart;
             $('input[name="daterange"]').daterangepicker({
                 "startDate": moment().startOf('isoweek'),
                 "endDate": moment().startOf('isoweek').add('days', 6),
@@ -40,41 +47,46 @@
                 startdate = start.format('DD/MM/YYYY');
                 enddate = end.format('DD/MM/YYYY');
             });
+            function DrawBarChart(areaChartData) {
+                if (chart) {                    
+                    chart.destroy();
+                }
+                chart = new Chart(ctx, {
+                    // The type of chart we want to create
+                    type: 'bar',
 
-            var areaChartData = {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                      label: 'Electronics',
-                      backgroundColor: 'rgba(210, 214, 222, 1)',
-                      borderColor: 'rgba(210, 214, 222, 1)',
-                      hoverBackgroundColor: 'rgba(210, 214, 222, 1)',
-                      hoverBorderColor: '#c1c7d1',
-                      pointHighlightFill: '#fff',
-                      pointHighlightStroke: 'rgba(220,220,220,1)',
-                      data: [65, 59, 80, 81, 56, 55, 40]
-                  },
-                  {
-                      label: 'Digital Goods',
-                      backgroundColor: 'rgba(60,141,188,0.9)',
-                      borderColor: 'rgba(60,141,188,0.8)',
-                      hoverBackgroundColor: '#3b8bba',
-                      hoverBorderColor: 'rgba(60,141,188,1)',
-                      pointHighlightFill: '#fff',
-                      pointHighlightStroke: 'rgba(60,141,188,1)',
-                      data: [28, 48, 40, 19, 86, 27, 90]
-                  }
-                ]
+                    // The data for our dataset
+                    data: areaChartData,
+
+                    // Configuration options go here
+                    options: barChartOptions
+                });
+               
+            }
+
+            function DrawLineChart(areaChartData) {
+                areaChartData.datasets[0].backgroundColor = 'rgba(0,0,0,0)';
+                areaChartData.datasets[1].backgroundColor = 'rgba(0,0,0,0)';
+                areaChartData.datasets[2].backgroundColor = 'rgba(0,0,0,0)';
+                areaChartData.datasets[3].backgroundColor = 'rgba(0,0,0,0)';
+                areaChartData.datasets[4].backgroundColor = 'rgba(0,0,0,0)';
+                if (chart) {
+                    chart.destroy();
+                }
+                chart = new Chart(ctx, {
+                    // The type of chart we want to create
+                    type: 'line',
+
+                    // The data for our dataset
+                    data: areaChartData,
+
+                    // Configuration options go here
+                    options: barChartOptions
+                });
             }
             //-------------
             //- BAR CHART -
-            //-------------
-            var barChartCanvas = $('#barChart').get(0).getContext('2d')
-            var barChart = new Chart(barChartCanvas)
-            var barChartData = areaChartData
-            barChartData.datasets[1].fillColor = '#00a65a'
-            barChartData.datasets[1].strokeColor = '#00a65a'
-            barChartData.datasets[1].pointColor = '#00a65a'
+            //-------------                     
             var barChartOptions = {
                 //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
                 scaleBeginAtZero: true,
@@ -100,24 +112,151 @@
                 legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
                 //Boolean - whether to make the chart responsive
                 responsive: true,
-                maintainAspectRatio: true
+                maintainAspectRatio: true,
+                legend: {
+                    labels: {
+                        // This more specific font property overrides the global property
+                        fontColor: 'black',
+                        fontSize: 15,
+                        fontStyle: 'bold',
+                    }
+                },
+                animation: {
+                    onComplete: function () {
+                        var ctx = this.chart.ctx;
+                        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'bold', Chart.defaults.global.defaultFontFamily);
+                        ctx.fillStyle = "black";
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+
+                        this.data.datasets.forEach(function (dataset) {
+                            for (var i = 0; i < dataset.data.length; i++) {
+                                for (var key in dataset._meta) {
+                                    var model = dataset._meta[key].data[i]._model;
+                                    if (dataset.data[i] != 0) {
+                                        ctx.fillText(dataset.data[i], model.x, model.y - 5);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
             }
-
             barChartOptions.datasetFill = false
+            $('#btnBar').click(function () {
+                $.ajax({
 
-            var ctx = document.getElementById('barChart').getContext('2d');
-            var chart = new Chart(ctx, {
-                // The type of chart we want to create
-                type: 'bar',
-
-                // The data for our dataset
-                data: barChartData,
-
-                // Configuration options go here
-                options: barChartOptions
+                    url: '@Url.Action("getTinhHinhKhamBenh")',
+                    type: 'POST',
+                    data: {
+                        'tuNgay': startdate,
+                        'denNgay': enddate
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                         areaChartData = {
+                            labels: data[0].Date,
+                            datasets: [
+                              {
+                                  label: data[0].Label,
+                                  backgroundColor: 'rgb(255, 20, 20)',
+                                  borderColor: 'rgb(255, 20, 20)',
+                                  data: data[0].Data,
+                              },
+                               {
+                                   label: data[1].Label,
+                                   backgroundColor: 'rgb(66, 134, 244)',
+                                   borderColor: 'rgb(66, 134, 244)',
+                                   data: data[1].Data,
+                               },
+                                {
+                                    label: data[2].Label,
+                                    backgroundColor: 'rgb(88, 183, 73)',
+                                    borderColor: 'rgb(88, 183, 73)',
+                                    data: data[2].Data,
+                                },
+                                 {
+                                     label: data[3].Label,
+                                     backgroundColor: 'rgb(216, 120, 23)',
+                                     borderColor: 'rgb(216, 120, 23)',
+                                     data: data[3].Data,
+                                 },
+                                  {
+                                      label: data[4].Label,
+                                      backgroundColor: 'rgb(224, 67, 106)',
+                                      borderColor: 'rgb(224, 67, 106)',
+                                      data: data[4].Data,
+                                  },                                   
+                            ]
+                        }
+                        
+                        DrawBarChart(areaChartData);
+                    },
+                    error: function (request, error) {
+                        alert("Request: " + JSON.stringify(request));
+                    }
+                });
             });
-            //barChart.Bar(barChartData, barChartOptions)
-        });
         
+
+            $('#btnLine').click(function () {
+                $.ajax({
+
+                    url: '@Url.Action("getTinhHinhKhamBenh")',
+                    type: 'POST',
+                    data: {
+                        'tuNgay': startdate,
+                        'denNgay': enddate
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        areaChartData = {
+                            labels: data[0].Date,
+                            datasets: [
+                              {
+                                  label: data[0].Label,
+                                  backgroundColor: 'rgba(255, 20, 20,0)',
+                                  borderColor: 'rgb(255, 20, 20)',
+                                  data: data[0].Data,
+                              },
+                               {
+                                   label: data[1].Label,
+                                   backgroundColor: 'rgba(66, 134, 244,0)',
+                                   borderColor: 'rgb(66, 134, 244)',
+                                   data: data[1].Data,
+                               },
+                                {
+                                    label: data[2].Label,
+                                    backgroundColor: 'rgba(88, 183, 73,0)',
+                                    borderColor: 'rgb(88, 183, 73)',
+                                    data: data[2].Data,
+                                },
+                                 {
+                                     label: data[3].Label,
+                                     backgroundColor: 'rgba(216, 120, 23,0)',
+                                     borderColor: 'rgb(216, 120, 23)',
+                                     data: data[3].Data,
+                                 },
+                                  {
+                                      label: data[4].Label,
+                                      backgroundColor: 'rgba(224, 67, 106,0)',
+                                      borderColor: 'rgb(224, 67, 106)',
+                                      data: data[4].Data,
+                                  },
+                            ]
+                        }
+
+                       DrawLineChart(areaChartData);
+                    },
+                    error: function (request, error) {
+                        alert("Request: " + JSON.stringify(request));
+                    }
+                });
+            });
+
+
+
+        });
+
     </script>
 }

@@ -13,9 +13,9 @@ namespace HospitalApplication.Entities.Models
         public string maba { get; set; }
         public string madv { get; set; }
         public DateTime ngaykcb { get; set; }
-
+        public string maicd { get; set; }
         public int dakham { get; set; }
-
+        public string maphong { get; set; }
         public int xoa { get; set; }
 
         public string thangkt { get; set; }

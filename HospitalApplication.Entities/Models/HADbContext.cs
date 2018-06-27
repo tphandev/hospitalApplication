@@ -31,7 +31,7 @@ namespace HospitalApplication.Entities.Models
 
 
             modelBuilder.Entity<khambenh>()
-                .ToTable("khambenh", "current").HasKey(m => new {m.mabn, m.makb })
+                .ToTable("khambenh", "current").HasKey(m =>  m.makb)
                 .HasRequired(t => t.dmdonvi).WithMany(c => c.khamhbenh).HasForeignKey(t => t.madv).WillCascadeOnDelete(false);
             modelBuilder.Entity<khambenh>().HasRequired(t => t.dmbenhnhan).WithMany(c => c.khambenh).HasForeignKey(t => t.mabn).WillCascadeOnDelete(false);
 
