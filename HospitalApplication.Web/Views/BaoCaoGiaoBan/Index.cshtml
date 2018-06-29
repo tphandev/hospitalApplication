@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Báo Cáo Giao Ban";
 }
 
 <div id="demo">
@@ -28,15 +28,15 @@
 <script src="~/Scripts/Chart.min.js"></script>
     <script>
         $(document).ready(function () {
-            var startdate = moment().format('DD/MM/YYYY');
-            var enddate = moment().format('DD/MM/YYYY');
+            var startdate = moment().startOf('isoweek').format('DD/MM/YYYY');
+            var enddate = moment().startOf('isoweek').add('days', 6).format('DD/MM/YYYY');
             var isXuatVien = 1;
             var areaChartData;
             var ctx = document.getElementById('barChart').getContext('2d');
             var chart;
             $('input[name="daterange"]').daterangepicker({
-                "startDate": moment().startOf('isoweek'),
-                "endDate": moment().startOf('isoweek').add('days', 6),
+                "startDate": startdate,
+                "endDate": enddate,
                 locale: {
 
                     format: 'DD/MM/YYYY'
@@ -149,8 +149,8 @@
                     url: '@Url.Action("getTinhHinhKhamBenh")',
                     type: 'POST',
                     data: {
-                        'tuNgay': startdate,
-                        'denNgay': enddate
+                        'startdate': startdate,
+                        'enddate': enddate
                     },
                     dataType: 'json',
                     success: function (data) {
@@ -205,8 +205,8 @@
                     url: '@Url.Action("getTinhHinhKhamBenh")',
                     type: 'POST',
                     data: {
-                        'tuNgay': startdate,
-                        'denNgay': enddate
+                        'startdate': startdate,
+                        'enddate': enddate
                     },
                     dataType: 'json',
                     success: function (data) {

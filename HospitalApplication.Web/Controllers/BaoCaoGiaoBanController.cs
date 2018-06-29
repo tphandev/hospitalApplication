@@ -53,8 +53,11 @@ namespace HospitalApplication.Web.Controllers
             stringDay = string.Format("{0}({1})", thu, shortDay.Substring(0, shortDay.Length - 5));
             return stringDay;
         }
-        public ActionResult getTinhHinhKhamBenh(DateTime tuNgay, DateTime denNgay)
+        [HttpPost]
+        public ActionResult getTinhHinhKhamBenh(string startdate, string enddate)
         {
+            DateTime tuNgay = DateTime.ParseExact(startdate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            DateTime denNgay = DateTime.ParseExact(enddate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
             List<int> ccData = new List<int>();
             List<int> nhiData = new List<int>();
             List<int> sanData = new List<int>();
@@ -64,7 +67,7 @@ namespace HospitalApplication.Web.Controllers
          .Select(offset => tuNgay.AddDays(offset))
          .ToList();
             denNgay = denNgay.AddDays(1);
-            List<TinhHinhKhamBenhModel> dem = storeDB.khambenh.Where(t => tuNgay <= t.ngaykcb && denNgay >= t.ngaykcb && !string.IsNullOrEmpty(t.maicd)).Select(t => new KhamBenhModel { ngaykcb = DbFunctions.TruncateTime(t.ngaykcb).Value, madv = t.madv, makb = t.makb }).GroupBy(x => new { x.madv, x.ngaykcb }).OrderBy(k => k.Key.ngaykcb)
+            List<TinhHinhKhamBenhModel> dem = storeDB.khambenh.Where(t => tuNgay <= t.ngaykcb && denNgay >= t.ngaykcb && !string.IsNullOrEmpty(t.maicd)).Select(t => new KhamBenhModel { ngaykcb = DbFunctions.TruncateTime(t.ngaykcb).Value, madv = t.madv, makb = t.makb }).GroupBy(m=>new { m.makb, m.madv }).Select(x=>x.FirstOrDefault()).GroupBy(x => new { x.madv, x.ngaykcb }).OrderBy(k => k.Key.ngaykcb)
                 .Select(m => new TinhHinhKhamBenhModel { madv = m.Key.madv, ngaykcb = m.Key.ngaykcb, soluong = m.Count() })
                 .ToList();
 

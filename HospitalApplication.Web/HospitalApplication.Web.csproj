@@ -448,7 +448,6 @@
     <Content Include="Scripts\DataTables\dataTables.responsive.js" />
     <Content Include="Scripts\DataTables\dataTables.responsive.min.js" />
     <Content Include="Scripts\DataTables\dataTables.rowGroup.js" />
-    <Content Include="Scripts\DataTables\dataTables.rowGroup.min.js" />
     <Content Include="Scripts\DataTables\dataTables.rowReorder.js" />
     <Content Include="Scripts\DataTables\dataTables.rowReorder.min.js" />
     <Content Include="Scripts\DataTables\dataTables.scroller.js" />
